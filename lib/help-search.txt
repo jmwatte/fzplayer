@@ -1,0 +1,15 @@
+
+  fzmp Search Shortcuts
+  ───────────────────────────────
+
+  Enter       Play selected track
+  Esc         Go back to previous view
+  Ctrl-A      Queue selected
+  Ctrl-Q      View queue
+  Ctrl-R      Set recent filter
+  Ctrl-T      Toggle art/tags preview
+  Alt-/       Move preview window
+  Ctrl-Space  Pause/Resume
+  Alt-N       Next track
+  Alt-P       Prev track
+  F1 / ?      This help

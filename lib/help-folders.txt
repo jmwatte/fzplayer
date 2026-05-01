@@ -1,0 +1,17 @@
+
+  fzmp Keyboard Shortcuts
+  ───────────────────────────────
+
+  Enter       Drill into folder
+  Esc         Go up / Exit
+  Ctrl-A      Queue all tracks (recursive)
+  Ctrl-S      Search mode
+  Ctrl-Q      View queue
+  Ctrl-R      Set recent filter
+  Ctrl-T      Toggle art/tags preview
+  Ctrl-E      Embedded art preview
+  Alt-/       Move preview window
+  Ctrl-Space  Pause/Resume
+  Alt-N       Next track
+  Alt-P       Prev track
+  F1 / ?      This help
