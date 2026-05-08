@@ -8,7 +8,8 @@
   Esc         Go back to folders
   Ctrl-A      Queue all tracks
   Ctrl-S      Search mode
-  Ctrl-Q      View queue
+  Ctrl-Q      Quit app
+  Ctrl-V      View queue
   Ctrl-R      Set recent filter
   Ctrl-T      Toggle art/tags preview
   Ctrl-E      Embedded art preview

@@ -3,10 +3,11 @@
   ───────────────────────────────
 
   Enter       Drill into folder
-  Esc         Go up / Exit
+  Esc         Go up (at root: stay)
   Ctrl-A      Queue all tracks (recursive)
   Ctrl-S      Search mode
-  Ctrl-Q      View queue
+  Ctrl-Q      Quit app
+  Ctrl-V      View queue
   Ctrl-R      Set recent filter
   Ctrl-T      Toggle art/tags preview
   Ctrl-E      Embedded art preview

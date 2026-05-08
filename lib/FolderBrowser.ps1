@@ -156,18 +156,18 @@ function Show-FolderBrowser {
         "--bind=alt-p:execute-silent(pwsh -NoProfile -File `"$mpvActionScript`" prev `"$($Config.PipeName)`")"
         "--bind=f1:preview(type `"$helpFile`")"
         "--bind=?:preview(type `"$helpFile`")"
-        "--expect=ctrl-a,ctrl-s,ctrl-q,ctrl-r,enter"
+        "--expect=ctrl-a,ctrl-s,ctrl-q,ctrl-v,ctrl-r,enter"
     )
 
     $result = $fzfInput | & $fzfExe @fzfArgs
 
     if (-not $result) {
-        # ESC or Ctrl-C — go up or exit
+        # ESC or Ctrl-C — go up; at root, stay in place
         $parentDir2 = Split-Path -Parent $Path
         if ($parentDir2 -and $parentDir2 -ne $Path -and $Path -ne $Config.MusicRoot) {
             return @{ Action = "up"; Path = $parentDir2 }
         }
-        return @{ Action = "exit"; Path = $Path }
+        return @{ Action = "noop"; Path = $Path }
     }
 
     # --print-query adds query as first line: query, key, selection
@@ -198,6 +198,9 @@ function Show-FolderBrowser {
             return @{ Action = "search"; Path = $Path }
         }
         "ctrl-q" {
+            return @{ Action = "quit"; Path = $Path }
+        }
+        "ctrl-v" {
             return @{ Action = "queue-view"; Path = $Path }
         }
         "ctrl-r" {
@@ -212,7 +215,7 @@ function Show-FolderBrowser {
                 $selectedPath = Join-Path $Path $selection
                 return @{ Action = "drill"; Path = $selectedPath; Query = $lastQuery }
             }
-            return @{ Action = "exit"; Path = $Path }
+            return @{ Action = "noop"; Path = $Path; Query = $lastQuery }
         }
     }
 }

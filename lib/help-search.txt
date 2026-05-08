@@ -5,7 +5,8 @@
   Enter       Play selected track
   Esc         Go back to previous view
   Ctrl-A      Queue selected
-  Ctrl-Q      View queue
+  Ctrl-Q      Quit app
+  Ctrl-V      View queue
   Ctrl-R      Set recent filter
   Ctrl-T      Toggle art/tags preview
   Alt-/       Move preview window

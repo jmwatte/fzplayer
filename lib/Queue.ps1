@@ -42,14 +42,14 @@ function Show-QueueBrowser {
         "--ansi"
         "--layout=reverse"
         "--multi"
-        "--header=$header`n[Queue: $($playlist.Count) tracks]$(if ($StatusMessage) { "`n$StatusMessage" })`nTab=Select  Enter=Jump  Ctrl-D=Remove  Esc=Back"
+        "--header=$header`n[Queue: $($playlist.Count) tracks]$(if ($StatusMessage) { "`n$StatusMessage" })`nTab=Select  Enter=Jump  Ctrl-D=Remove  Esc=Back  Ctrl-Q=Quit"
         "--header-first"
         "--prompt=Queue> "
         "--no-preview"
         "--bind=ctrl-space:execute-silent(pwsh -NoProfile -File `"$mpvActionScript`" pause `"$($Config.PipeName)`")"
         "--bind=alt-n:execute-silent(pwsh -NoProfile -File `"$mpvActionScript`" next `"$($Config.PipeName)`")"
         "--bind=alt-p:execute-silent(pwsh -NoProfile -File `"$mpvActionScript`" prev `"$($Config.PipeName)`")"
-        "--expect=ctrl-d,enter,esc"
+        "--expect=ctrl-d,enter,esc,ctrl-q"
     )
 
     # Pre-select current track
@@ -101,6 +101,9 @@ function Show-QueueBrowser {
         }
         "esc" {
             return @{ Action = "back" }
+        }
+        "ctrl-q" {
+            return @{ Action = "quit" }
         }
         default {
             return @{ Action = "back" }

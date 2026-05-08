@@ -156,6 +156,9 @@ try {
                         $returnPath = $currentPath
                         $mode = "queue"
                     }
+                    "quit" {
+                        $running = $false
+                    }
                     "exit" {
                         $running = $false
                     }
@@ -224,6 +227,9 @@ try {
                         $returnPath = $currentPath
                         $mode = "queue"
                     }
+                    "quit" {
+                        $running = $false
+                    }
                     "back" {
                         $mode = "folders"
                         $folderQuery = if ($queryStack.Count -gt 0) { $queryStack.Pop() } else { "" }
@@ -257,6 +263,9 @@ try {
                         $previousMode = "search"
                         $mode = "queue"
                     }
+                    "quit" {
+                        $running = $false
+                    }
                     "back" {
                         $mode = $previousMode
                         $currentPath = $returnPath
@@ -286,6 +295,9 @@ try {
                         $mode = $previousMode
                         $currentPath = $returnPath
                         $statusMessage = $result.StatusMessage
+                    }
+                    "quit" {
+                        $running = $false
                     }
                 }
             }
