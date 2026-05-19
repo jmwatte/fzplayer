@@ -7,6 +7,8 @@
   Enter       Queue selected tracks
   Esc         Go back to folders
   Ctrl-A      Queue all tracks
+  Ctrl-G      Metadata categories
+  Ctrl-O      Open in Explorer
   Ctrl-S      Search mode
   Ctrl-Q      Quit app
   Ctrl-V      View queue

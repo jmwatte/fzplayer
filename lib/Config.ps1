@@ -11,8 +11,13 @@ $script:DefaultConfig = @{
     FfmpegPath      = "ffmpeg"
     FdPath          = "fd.exe"
     FzfPath         = "fzf"
+    EsPath          = "es.exe"
     PipeName        = "fzmp"
     Recent          = $null
+    MetadataEnabled = $true
+    MetadataBackend = "cache"   # "cache" for local CSV tag cache
+    MetadataCachePath = "C:\Users\jmw\Desktop\tescsvEverything.csv"
+    MetadataUnknownLabel = "Unknown"
     ArtFilenames    = @("folder.jpg", "folder.png", "cover.jpg", "cover.png", "front.jpg", "front.png")
     AudioExtensions = @("mp3", "flac", "ogg", "wav", "m4a", "opus", "wma", "aac", "ape", "wv", "mka")
 }
@@ -59,6 +64,10 @@ function Get-FzmpConfig {
     if ($PreviewMode)     { $config.PreviewMode     = $PreviewMode }
     if ($Recent)          { $config.Recent          = $Recent }
 
+    if (-not $config.MetadataCachePath) {
+        $config.MetadataCachePath = Join-Path (Join-Path $env:APPDATA "fzmp") "metadata-cache.csv"
+    }
+
     # Resolve the script root for lib path reference
     $config['_ScriptRoot'] = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
     if (-not $config['_ScriptRoot']) {
@@ -82,6 +91,10 @@ function Test-FzmpDependencies {
         @{ Name = "chafa";   Path = $Config.ChafaPath }
         @{ Name = "ffprobe"; Path = $Config.FfprobePath }
     )
+
+    if ($Config.MetadataEnabled -and $Config.MetadataBackend -eq "everything") {
+        $tools += @{ Name = "es"; Path = $Config.EsPath }
+    }
 
     foreach ($tool in $tools) {
         $resolved = $null
@@ -109,6 +122,9 @@ function Test-FzmpDependencies {
     }
     if ($Config.PreviewMode -notin @('art', 'tags')) {
         $errors += "PreviewMode must be 'art' or 'tags', got '$($Config.PreviewMode)'"
+    }
+    if ($Config.MetadataBackend -notin @('cache', 'everything')) {
+        $errors += "MetadataBackend must be 'cache' or 'everything', got '$($Config.MetadataBackend)'"
     }
 
     return $errors

@@ -75,7 +75,7 @@ function Show-SearchBrowser {
         "--bind=alt-p:execute-silent(pwsh -NoProfile -File `"$mpvActionScript`" prev `"$($Config.PipeName)`")"
         "--bind=f1:preview(type `"$(Join-Path $PSScriptRoot 'help-search.txt')`")"
         "--bind=?:preview(type `"$(Join-Path $PSScriptRoot 'help-search.txt')`")"
-        "--expect=ctrl-a,ctrl-q,ctrl-v,ctrl-r,enter"
+        "--expect=ctrl-a,ctrl-g,ctrl-o,ctrl-q,ctrl-v,ctrl-r,enter"
     )
 
     $result = $fzfInput | & $fzfExe @fzfArgs
@@ -102,8 +102,17 @@ function Show-SearchBrowser {
             }
             return @{ Action = "noop"; RootPath = $RootPath }
         }
+        "ctrl-o" {
+            if ($selectedFile) {
+                return @{ Action = "open-explorer"; RootPath = $RootPath; Path = (Split-Path -Parent $selectedFile); File = $selectedFile }
+            }
+            return @{ Action = "back"; RootPath = $RootPath }
+        }
         "ctrl-q" {
             return @{ Action = "quit"; RootPath = $RootPath }
+        }
+        "ctrl-g" {
+            return @{ Action = "metadata"; RootPath = $RootPath }
         }
         "ctrl-v" {
             return @{ Action = "queue-view"; RootPath = $RootPath }

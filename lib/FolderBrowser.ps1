@@ -156,7 +156,7 @@ function Show-FolderBrowser {
         "--bind=alt-p:execute-silent(pwsh -NoProfile -File `"$mpvActionScript`" prev `"$($Config.PipeName)`")"
         "--bind=f1:preview(type `"$helpFile`")"
         "--bind=?:preview(type `"$helpFile`")"
-        "--expect=ctrl-a,ctrl-s,ctrl-q,ctrl-v,ctrl-r,enter"
+        "--expect=ctrl-a,ctrl-g,ctrl-s,ctrl-q,ctrl-v,ctrl-r,enter"
     )
 
     $result = $fzfInput | & $fzfExe @fzfArgs
@@ -196,6 +196,9 @@ function Show-FolderBrowser {
         }
         "ctrl-s" {
             return @{ Action = "search"; Path = $Path }
+        }
+        "ctrl-g" {
+            return @{ Action = "metadata"; Path = $Path }
         }
         "ctrl-q" {
             return @{ Action = "quit"; Path = $Path }

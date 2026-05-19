@@ -78,7 +78,7 @@ function Show-TrackBrowser {
         "--bind=alt-p:execute-silent(pwsh -NoProfile -File `"$mpvActionScript`" prev `"$($Config.PipeName)`")"
         "--bind=f1:preview(type `"$(Join-Path $libDir 'help-tracks.txt')`")"
         "--bind=?:preview(type `"$(Join-Path $libDir 'help-tracks.txt')`")"
-        "--expect=ctrl-a,ctrl-s,ctrl-q,ctrl-v,ctrl-r,enter"
+        "--expect=ctrl-a,ctrl-g,ctrl-o,ctrl-s,ctrl-q,ctrl-v,ctrl-r,enter"
     )
 
     $result = $fzfInput | & $fzfExe @fzfArgs
@@ -110,8 +110,17 @@ function Show-TrackBrowser {
         "ctrl-a" {
             return @{ Action = "queue-all"; Path = $Path }
         }
+        "ctrl-o" {
+            if ($selectedFile) {
+                return @{ Action = "open-explorer"; Path = (Split-Path -Parent $selectedFile); File = $selectedFile }
+            }
+            return @{ Action = "back"; Path = $Path }
+        }
         "ctrl-s" {
             return @{ Action = "search"; Path = $Path }
+        }
+        "ctrl-g" {
+            return @{ Action = "metadata"; Path = $Path }
         }
         "ctrl-q" {
             return @{ Action = "quit"; Path = $Path }

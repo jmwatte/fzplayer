@@ -5,6 +5,7 @@
   Enter       Drill into folder
   Esc         Go up (at root: stay)
   Ctrl-A      Queue all tracks (recursive)
+  Ctrl-G      Metadata categories
   Ctrl-S      Search mode
   Ctrl-Q      Quit app
   Ctrl-V      View queue

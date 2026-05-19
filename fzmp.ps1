@@ -26,6 +26,7 @@ $libDir = Join-Path $scriptRoot "lib"
 . (Join-Path $libDir "FolderBrowser.ps1")
 . (Join-Path $libDir "TrackBrowser.ps1")
 . (Join-Path $libDir "Search.ps1")
+. (Join-Path $libDir "MetaBrowser.ps1")
 . (Join-Path $libDir "Queue.ps1")
 
 # Load config with CLI overrides
@@ -49,6 +50,10 @@ if ($errors.Count -gt 0) {
     exit 1
 }
 
+if ($config.MetadataEnabled) {
+    Start-FzmpMetadataWarmup -Config $config
+}
+
 # Cleanup on exit
 $cleanupBlock = {
     Stop-Mpv -Config $config -ErrorAction SilentlyContinue
@@ -62,6 +67,22 @@ function Ensure-MpvRunning {
     if (-not $script:MpvStarted) {
         Start-Mpv -Config $config
         $script:MpvStarted = $true
+    }
+}
+
+function Open-InExplorer {
+    param(
+        [string]$Path,
+        [string]$File
+    )
+
+    if ($File -and (Test-Path -LiteralPath $File)) {
+        Start-Process explorer.exe -ArgumentList "/select,`"$File`""
+        return
+    }
+
+    if ($Path -and (Test-Path -LiteralPath $Path)) {
+        Start-Process explorer.exe -ArgumentList "`"$Path`""
     }
 }
 
@@ -88,7 +109,7 @@ function Get-RecentInput {
 
 try {
     $currentPath = $config.MusicRoot
-    $mode = "folders"       # "folders", "tracks", "search", "queue"
+    $mode = "folders"       # "folders", "tracks", "search", "metadata", "queue"
     $previousMode = "folders"
     $returnPath = $config.MusicRoot
     $folderQuery = ""
@@ -150,6 +171,11 @@ try {
                         $previousMode = "folders"
                         $returnPath = $currentPath
                         $mode = "search"
+                    }
+                    "metadata" {
+                        $previousMode = "folders"
+                        $returnPath = $currentPath
+                        $mode = "metadata"
                     }
                     "queue-view" {
                         $previousMode = "folders"
@@ -222,10 +248,19 @@ try {
                         $returnPath = $currentPath
                         $mode = "search"
                     }
+                    "metadata" {
+                        $previousMode = "tracks"
+                        $returnPath = $currentPath
+                        $mode = "metadata"
+                    }
                     "queue-view" {
                         $previousMode = "tracks"
                         $returnPath = $currentPath
                         $mode = "queue"
+                    }
+                    "open-explorer" {
+                        Open-InExplorer -Path $result.Path -File $result.File
+                        $statusMessage = if ($result.File) { "Opened in Explorer: $(Split-Path -Leaf $result.File)" } else { "Opened in Explorer: $(Split-Path -Leaf $result.Path)" }
                     }
                     "quit" {
                         $running = $false
@@ -262,6 +297,74 @@ try {
                     "queue-view" {
                         $previousMode = "search"
                         $mode = "queue"
+                    }
+                    "metadata" {
+                        $previousMode = "search"
+                        $mode = "metadata"
+                    }
+                    "open-explorer" {
+                        Open-InExplorer -Path $result.Path -File $result.File
+                        $statusMessage = if ($result.File) { "Opened in Explorer: $(Split-Path -Leaf $result.File)" } else { "Opened in Explorer: $(Split-Path -Leaf $result.Path)" }
+                    }
+                    "quit" {
+                        $running = $false
+                    }
+                    "back" {
+                        $mode = $previousMode
+                        $currentPath = $returnPath
+                        $statusMessage = $result.StatusMessage
+                    }
+                    "set-recent" {
+                        $r = Get-RecentInput -FzfPath $config.FzfPath
+                        if ($r.Changed) { $config.Recent = $r.Value }
+                    }
+                }
+            }
+
+            "metadata" {
+                if (-not $config.MetadataEnabled) {
+                    $mode = $previousMode
+                    $statusMessage = "Metadata mode is disabled in config"
+                    continue
+                }
+
+                $result = Show-MetadataBrowser -Config $config -StatusMessage $statusMessage
+                $statusMessage = ""
+
+                switch ($result.Action) {
+                    "play" {
+                        Ensure-MpvRunning
+                        Invoke-MpvPlay -Config $config -FilePath $result.File
+                    }
+                    "queue" {
+                        Ensure-MpvRunning
+                        Add-MpvQueue -Config $config -FilePath $result.File
+                        $statusMessage = "Queued: $(Split-Path -Leaf $result.File)"
+                    }
+                    "queue-selected" {
+                        Ensure-MpvRunning
+                        foreach ($f in $result.Files) {
+                            Add-MpvQueue -Config $config -FilePath $f
+                        }
+                        $n = $result.Files.Count
+                        $statusMessage = if ($n -eq 1) { "Queued: $(Split-Path -Leaf $result.Files[0])" } else { "Queued $n tracks" }
+                    }
+                    "build-meta-cache" {
+                        Write-Host "`n  Building metadata cache (first run may take a long time)..." -ForegroundColor DarkGray
+                        $cachePath = Update-FzmpMetadataCache -Config $config -Force
+                        $statusMessage = "Metadata cache updated: $cachePath"
+                    }
+                    "search" {
+                        $previousMode = "metadata"
+                        $mode = "search"
+                    }
+                    "queue-view" {
+                        $previousMode = "metadata"
+                        $mode = "queue"
+                    }
+                    "open-explorer" {
+                        Open-InExplorer -Path $result.Path -File $result.File
+                        $statusMessage = if ($result.File) { "Opened in Explorer: $(Split-Path -Leaf $result.File)" } else { "Opened in Explorer: $(Split-Path -Leaf $result.Path)" }
                     }
                     "quit" {
                         $running = $false

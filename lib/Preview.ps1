@@ -12,6 +12,10 @@ param(
     [string]$ConfigPath = ""
 )
 
+# Close any dangling sixel DCS immediately.
+# This must run before any other output or heavy work when fzf rapidly kills/restarts previews.
+[Console]::Out.Write("$([char]0x1B)\")
+
 # Resolve full path from env var if Path is relative
 $basePath = $env:FZMP_PREVIEW_BASE
 if ($Path -eq "..") {
@@ -332,9 +336,6 @@ function Show-Tags {
 }
 
 # Main dispatch
-# Send sixel String Terminator (ESC \) to close any dangling DCS from a killed previous preview
-[Console]::Out.Write("$([char]0x1B)\")
-
 switch ($Mode) {
     "art"      { Show-AlbumArt -Directory $targetDir }
     "tags"     { Show-Tags -FilePath $targetPath }

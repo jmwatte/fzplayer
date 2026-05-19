@@ -19,9 +19,16 @@
     FfmpegPath      = "C:\Users\jmw\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-8.1-full_build\bin\ffmpeg.exe"
     FdPath          = "C:\Users\jmw\AppData\Local\Microsoft\WinGet\Packages\sharkdp.fd_Microsoft.Winget.Source_8wekyb3d8bbwe\fd-v10.4.2-x86_64-pc-windows-msvc\fd.exe"
     FzfPath         = "fzf"       # fzf is typically in PATH
+    EsPath          = "C:\Program Files\ES-1.1.0.30.x64\es.exe"
 
     # Named pipe name for mpv IPC (no need to change unless running multiple instances)
     PipeName        = "fzmp"
+
+    # Metadata navigation mode
+    MetadataEnabled = $true
+    MetadataBackend = "cache"     # "cache" uses local CSV tag cache
+    MetadataCachePath = ""        # empty => %APPDATA%\fzmp\metadata-cache.csv
+    MetadataUnknownLabel = "Unknown"
 
     # Album art filenames to look for in folders (checked in order)
     ArtFilenames    = @("folder.jpg", "folder.png", "cover.jpg", "cover.png", "front.jpg", "front.png")
